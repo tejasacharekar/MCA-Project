@@ -1,0 +1,51 @@
+-
+ name: Project Implementation
+ hosts: public
+ become: true
+ tasks:
+  - name: "System Update"
+    yum:
+      name: "*"
+      state: latest
+      update_cache: true
+  - name: "Changing hostname"
+    hostname:
+      name: "tejasPublic"
+  - name: "Adding user with Sudo access"
+    ansible.builtin.user:
+      name: public
+      groups: wheel
+      append: yes
+      password: ""
+      update_password: on_create
+  - name: "Installing HTTPD"
+    yum:
+      name: httpd
+      state: present
+  - name: "Starting webserver"
+    service:
+      name: httpd
+      state: started
+      enabled: True
+  - name: "Deploy static website"
+    copy:
+      src: dist/my-angular-app/
+      dest: /var/www/html/
+  - name: "Restarting webserver"
+    service:
+      name: httpd
+      state: restarted
+  - name: "SSH Key Generation"
+    ansible.builtin.user:
+      name: bastion
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: ~/.ssh/id_rsa
+  - name: "Install epel"
+    yum:
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      state: present
+  - name: "Install nrpe" 
+    yum:
+      name: nrpe
+      state: latest

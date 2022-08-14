@@ -1,0 +1,17 @@
+-
+  name: Project Implementation
+  hosts: private
+  become: true
+  tasks:
+    - name: "Changing hostname"
+      hostname:
+        name: "tejasPrivate"
+    - name: "Adding user with Sudo access"
+      ansible.builtin.user:
+        name: private
+        groups: wheel
+        append: yes
+        password: ""
+        update_password: on_create
+
+
